@@ -70,7 +70,7 @@ locals {
 }
 
 resource "kubectl_manifest" "cwagent-serviceaccount" {
-  for_each = toset(service-account-manifests)
+  for_each = toset(local.service-account-manifests)
   depends_on = [kubernetes_namespace.amazon-cloudwatch, kubernetes_config_map.cwagentconfig[0]]
   yaml_body = yamlencode(each.key)
 }
