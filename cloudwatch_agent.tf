@@ -63,7 +63,7 @@ resource "aws_iam_role_policy_attachment" "cwagent-eks" {
 }
 
 locals {
-  service-account-manifests = var.enable_cloudwatch_agent ? yamldecode(templatefile("${path.module}/yamls/cwagent-serviceaccount.yaml", {
+  service-account-manifests = var.enable_cloudwatch_agent ? split("---", templatefile("${path.module}/yamls/cwagent-serviceaccount.yaml", {
     account_id          = var.account_id,
     cloudwatch_iam_role = aws_iam_role.cwagent-eks[0].name,
   })) : []

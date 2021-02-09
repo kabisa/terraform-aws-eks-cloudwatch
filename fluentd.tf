@@ -29,7 +29,7 @@ resource "aws_iam_role_policy_attachment" "fluentd-cloudwatch" {
 }
 
 locals {
-  fluentd-manifests = var.enable_cloudwatch_agent ? yamldecode(templatefile("${path.module}/yamls/cloudwatch-fluentd.yaml", {
+  fluentd-manifests = var.enable_cloudwatch_agent ? split("---", templatefile("${path.module}/yamls/cloudwatch-fluentd.yaml", {
     account_id            = var.account_id,
     fluentd_iam_role_name = aws_iam_role.fluentd-cloudwatch[0].name,
   })) : []
