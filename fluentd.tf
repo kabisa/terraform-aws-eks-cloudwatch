@@ -38,5 +38,5 @@ locals {
 resource "kubectl_manifest" "cloudwatch-fluent-d" {
   for_each = toset(local.fluentd-manifests)
   depends_on = [kubernetes_namespace.amazon-cloudwatch, kubernetes_config_map.cluster-info, aws_iam_role_policy_attachment.fluentd-cloudwatch[0]]
-  yaml_body = yamlencode(each.key)
+  yaml_body = each.key
 }
