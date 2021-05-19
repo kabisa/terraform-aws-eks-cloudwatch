@@ -29,10 +29,10 @@ resource "aws_iam_role_policy_attachment" "fluentd-cloudwatch" {
 }
 
 resource "kubectl_manifest" "cloudwatch-fluent-d" {
-  for_each   = var.enable_logs_forwarding ? split("---", templatefile("${path.module}/yamls/cloudwatch-fluentd.yaml", {
+  for_each   = toset(var.enable_logs_forwarding ? split("---", templatefile("${path.module}/yamls/cloudwatch-fluentd.yaml", {
     account_id            = var.account_id,
     fluentd_iam_role_name = aws_iam_role.fluentd-cloudwatch[0].name,
-  }) ) : []
+  }) ) : [])
   depends_on = [kubernetes_namespace.amazon-cloudwatch, kubernetes_config_map.cluster-info, aws_iam_role_policy_attachment.fluentd-cloudwatch[0]]
   yaml_body  = each.key
 }
