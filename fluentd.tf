@@ -31,12 +31,12 @@ resource "aws_iam_role_policy_attachment" "fluentd-cloudwatch" {
 locals {
   # build a service account manifest map
   fluent_d_manifest_templated = templatefile("${path.module}/yamls/cloudwatch-fluentd.yaml", {
-    account_id          = var.account_id,
+    account_id            = var.account_id,
     fluentd_iam_role_name = aws_iam_role.fluentd-cloudwatch[0].name,
   })
-  fluent_d_manifest_splitted = split("---",  local.fluent_d_manifest_templated)
-  fluent_d_manifest_list = var.enable_cloudwatch_agent ? local.fluent_d_manifest_splitted : []
-  fluent_d_manifest_map = {for mn in local.fluent_d_manifest_list : md5(mn) => mn }
+  fluent_d_manifest_splitted  = split("---", local.fluent_d_manifest_templated)
+  fluent_d_manifest_list      = var.enable_cloudwatch_agent ? local.fluent_d_manifest_splitted : []
+  fluent_d_manifest_map       = {for mn in local.fluent_d_manifest_list : md5(mn) => mn}
 }
 
 resource "kubectl_manifest" "cloudwatch-fluent-d" {
