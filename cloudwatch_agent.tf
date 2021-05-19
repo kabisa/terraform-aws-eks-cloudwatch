@@ -78,12 +78,12 @@ resource "file" "cwagent-daemonset" {
 
 resource "kubectl_manifest" "cwagent-serviceaccount" {
   depends_on = [kubernetes_namespace.amazon-cloudwatch, kubernetes_config_map.cwagentconfig[0]]
-  for_each   = split("---", file.cwagent-daemonset)
+  for_each   = split("---", template_file.cwagent-serviceaccount.rendered)
   yaml_body  = each.value
 }
 
 resource "kubectl_manifest" "cwagent-daemonset" {
-  for_each = split("---", file(file().))
+  for_each = split("---", file.cwagent-daemonset)
   depends_on = [kubernetes_namespace.amazon-cloudwatch, kubectl_manifest.cwagent-serviceaccount[0], kubernetes_config_map.cwagentconfig[0], aws_iam_role_policy_attachment.cwagent-eks[0]]
   yaml_body  = each.value
 }
