@@ -80,7 +80,7 @@ locals {
 
 resource "kubectl_manifest" "cwagent-serviceaccount" {
   depends_on = [kubernetes_namespace.amazon-cloudwatch, kubernetes_config_map.cwagentconfig[0]]
-  for_each   = service_account_manifest_map
+  for_each   = local.service_account_manifest_map
   yaml_body  = each.value
 }
 
