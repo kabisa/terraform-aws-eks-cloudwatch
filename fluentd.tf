@@ -37,7 +37,7 @@ resource "template_file" "cloudwatch-fluentd" {
 }
 
 resource "kubectl_manifest" "cloudwatch-fluent-d" {
-  for_each   = var.enable_logs_forwarding ? split("---", template_file.cloudwatch-fluentd.rendered[0]) : []
+  for_each   = var.enable_logs_forwarding ? split("---", template_file.cloudwatch-fluentd.rendered) : []
   depends_on = [kubernetes_namespace.amazon-cloudwatch, kubernetes_config_map.cluster-info, aws_iam_role_policy_attachment.fluentd-cloudwatch[0]]
   yaml_body  = each.key
 }
