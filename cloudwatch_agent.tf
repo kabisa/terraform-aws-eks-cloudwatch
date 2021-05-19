@@ -63,7 +63,7 @@ resource "aws_iam_role_policy_attachment" "cwagent-eks" {
 }
 
 data "template_file" "cwagent-serviceaccount" {
-  filename = "${path.module}/yamls/cwagent-serviceaccount.yaml"
+  template = "${path.module}/yamls/cwagent-serviceaccount.yaml"
   vars     = {
     account_id          = var.account_id,
     cloudwatch_iam_role = aws_iam_role.cwagent-eks[0].name,
