@@ -32,7 +32,7 @@ locals {
   # build a service account manifest map
   fluent_d_manifest_templated = templatefile("${path.module}/yamls/cloudwatch-fluentd.yaml", {
     account_id          = var.account_id,
-    cloudwatch_iam_role = aws_iam_role.cwagent-eks[0].name,
+    fluentd_iam_role_name = aws_iam_role.fluentd-cloudwatch[0].name,
   })
   fluent_d_manifest_splitted = split("---",  local.fluent_d_manifest_templated)
   fluent_d_manifest_list = var.enable_cloudwatch_agent ? local.fluent_d_manifest_splitted : []
