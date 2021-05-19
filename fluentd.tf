@@ -29,7 +29,6 @@ resource "aws_iam_role_policy_attachment" "fluentd-cloudwatch" {
 }
 
 resource "template_file" "cloudwatch-fluentd" {
-  count    = var.enable_cloudwatch_agent ? 1 : 0
   template = file("${path.module}/yamls/cloudwatch-fluentd.yaml")
   vars     = {
     account_id            = var.account_id,
@@ -38,7 +37,7 @@ resource "template_file" "cloudwatch-fluentd" {
 }
 
 resource "kubectl_manifest" "cloudwatch-fluent-d" {
-  for_each   = toset(split("---", template_file.cloudwatch-fluentd.rendered))
+  for_each   = var.enable_logs_forwarding ? split("---", template_file.cloudwatch-fluentd.rendered[0]) : []
   depends_on = [kubernetes_namespace.amazon-cloudwatch, kubernetes_config_map.cluster-info, aws_iam_role_policy_attachment.fluentd-cloudwatch[0]]
   yaml_body  = each.key
 }
