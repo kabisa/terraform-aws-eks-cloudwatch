@@ -71,7 +71,7 @@ resource "template_file" "cwagent-serviceaccount" {
   }
 }
 
-resource "file" "cwagent-daemonset" {
+resource "local_file" "cwagent-daemonset" {
   count    = var.enable_cloudwatch_agent ? 1 : 0
   filename = "${path.module}/yamls/cwagent-daemonset.yaml"
 }
@@ -83,7 +83,7 @@ resource "kubectl_manifest" "cwagent-serviceaccount" {
 }
 
 resource "kubectl_manifest" "cwagent-daemonset" {
-  for_each = split("---", file.cwagent-daemonset)
+  for_each = split("---", local_file.cwagent-daemonset.content)
   depends_on = [kubernetes_namespace.amazon-cloudwatch, kubectl_manifest.cwagent-serviceaccount[0], kubernetes_config_map.cwagentconfig[0], aws_iam_role_policy_attachment.cwagent-eks[0]]
   yaml_body  = each.value
 }
