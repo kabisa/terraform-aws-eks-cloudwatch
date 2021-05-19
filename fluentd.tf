@@ -36,7 +36,7 @@ locals {
   })
   fluent_d_manifest_splitted = split("---",  local.fluent_d_manifest_templated)
   fluent_d_manifest_list = var.enable_cloudwatch_agent ? local.fluent_d_manifest_splitted : []
-  fluent_d_manifest_map = {for mn in local.fluent_d_manifest_list : md5(mn) => mv }
+  fluent_d_manifest_map = {for mn in local.fluent_d_manifest_list : md5(mn) => mn }
 }
 
 resource "kubectl_manifest" "cloudwatch-fluent-d" {

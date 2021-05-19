@@ -70,12 +70,12 @@ locals {
   })
   service_account_manifest_splitted = split("---",  local.service_account_manifest_templated)
   service_account_manifest_list = var.enable_cloudwatch_agent ? local.service_account_manifest_splitted : []
-  service_account_manifest_map = {for mn in local.service_account_manifest_list : md5(mn) => mv }
+  service_account_manifest_map = {for mn in local.service_account_manifest_list : md5(mn) => mn }
   # build deamonset manifest map
   daemonset_manifest = file("${path.module}/yamls/cwagent-daemonset.yaml")
   daemonset_manifest_splitted = split("---",  local.daemonset_manifest)
   daemonset_manifest_list = var.enable_cloudwatch_agent ? local.daemonset_manifest_splitted : []
-  daemonset_manifest_map = {for mn in local.daemonset_manifest_list : md5(mn) => mv }
+  daemonset_manifest_map = {for mn in local.daemonset_manifest_list : md5(mn) => mn }
 }
 
 resource "kubectl_manifest" "cwagent-serviceaccount" {
