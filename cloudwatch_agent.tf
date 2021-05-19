@@ -71,7 +71,6 @@ resource "template_file" "cwagent-serviceaccount" {
 }
 
 resource "local_file" "cwagent-daemonset" {
-  count    = var.enable_cloudwatch_agent ? 1 : 0
   filename = "${path.module}/yamls/cwagent-daemonset.yaml"
 }
 
