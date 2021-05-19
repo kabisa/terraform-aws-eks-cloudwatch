@@ -62,21 +62,16 @@ resource "aws_iam_role_policy_attachment" "cwagent-eks" {
   policy_arn = aws_iam_policy.eks-cloudwatch-policy.arn
 }
 
-data "template_file" "cwagent-serviceaccount" {
-  template = "${path.module}/yamls/cwagent-serviceaccount.yaml"
-  vars     = {
-    account_id          = var.account_id,
-    cloudwatch_iam_role = aws_iam_role.cwagent-eks[0].name,
-  }
-}
-
 resource "local_file" "cwagent-daemonset" {
   filename = "${path.module}/yamls/cwagent-daemonset.yaml"
 }
 
 resource "kubectl_manifest" "cwagent-serviceaccount" {
   depends_on = [kubernetes_namespace.amazon-cloudwatch, kubernetes_config_map.cwagentconfig[0]]
-  for_each   = var.enable_cloudwatch_agent ? split("---", data.template_file.cwagent-serviceaccount.rendered) : []
+  for_each   = var.enable_cloudwatch_agent ? split("---", templatefile("${path.module}/yamls/cwagent-serviceaccount.yaml", {
+    account_id          = var.account_id,
+    cloudwatch_iam_role = aws_iam_role.cwagent-eks[0].name,
+  }) ) : []
   yaml_body  = each.key
 }
 
