@@ -63,32 +63,36 @@ resource "aws_iam_role_policy_attachment" "cwagent-eks" {
 }
 
 locals {
-  # build a service account manifest map
-  service_account_manifest_templated = templatefile("${path.module}/yamls/cwagent-serviceaccount.yaml", {
-    account_id          = var.account_id,
-    cloudwatch_iam_role = var.enable_cloudwatch_agent ? aws_iam_role.cwagent-eks[0].name : "dummy",
-  })
-  service_account_manifest_splitted = split("---", local.service_account_manifest_templated)
-  service_account_manifest_list     = var.enable_cloudwatch_agent ? local.service_account_manifest_splitted : []
-  service_account_manifest_map      = { for mn in local.service_account_manifest_list : md5(mn) => mn }
+  service_account_manifests = var.enable_cloudwatch_agent ? (
+    split("---", templatefile("${path.module}/yamls/cwagent-serviceaccount.yaml", {
+      account_id          = var.account_id
+      cloudwatch_iam_role = aws_iam_role.cwagent-eks[0].name
+    }))
+  ) : []
 
-  # build deamonset manifest map
-  daemonset_manifest          = file("${path.module}/yamls/cwagent-daemonset.yaml")
-  daemonset_manifest_splitted = split("---", local.daemonset_manifest)
-  daemonset_manifest_list     = var.enable_cloudwatch_agent ? local.daemonset_manifest_splitted : []
-  daemonset_manifest_map      = { for mn in local.daemonset_manifest_list : md5(mn) => mn }
+  daemonset_manifests = var.enable_cloudwatch_agent ? (
+    split("---", file("${path.module}/yamls/cwagent-daemonset.yaml"))
+  ): []
 }
 
 resource "kubectl_manifest" "cwagent-serviceaccount" {
-  count      = var.enable_cloudwatch_agent ? 1 : 0
-  depends_on = [kubernetes_namespace.amazon-cloudwatch, kubernetes_config_map.cwagentconfig[0]]
-  for_each   = local.service_account_manifest_map
+  for_each   = { for manifest in local.service_account_manifests : md5(manifest) => manifest }
   yaml_body  = each.value
+
+  depends_on = [
+    kubernetes_namespace.amazon-cloudwatch,
+    kubernetes_config_map.cwagentconfig[0]
+  ]
 }
 
 resource "kubectl_manifest" "cwagent-daemonset" {
-  count      = var.enable_cloudwatch_agent ? 1 : 0
-  for_each   = local.daemonset_manifest_map
-  depends_on = [kubernetes_namespace.amazon-cloudwatch, kubectl_manifest.cwagent-serviceaccount[0], kubernetes_config_map.cwagentconfig[0], aws_iam_role_policy_attachment.cwagent-eks[0]]
+  for_each   = { for manifest in local.daemonset_manifests : md5(manifest) => manifest }
   yaml_body  = each.value
+
+  depends_on = [
+    kubernetes_namespace.amazon-cloudwatch,
+    kubectl_manifest.cwagent-serviceaccount[0],
+    kubernetes_config_map.cwagentconfig[0],
+    aws_iam_role_policy_attachment.cwagent-eks[0]
+  ]
 }
