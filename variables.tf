@@ -21,3 +21,9 @@ variable "enable_logs_forwarding" {
 variable "eks_cluster_name" {
   type = string
 }
+
+variable "log_retention_in_days" {
+  description = "Number of days to retain log events"
+  type        = number
+  default     = 90
+}
