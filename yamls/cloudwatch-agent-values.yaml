@@ -3,7 +3,7 @@ image:
   tag: 1.247345.36b249270
   pullPolicy: IfNotPresent
 
-clusterName:
+clusterName: ${eks_cluster_name}
 
 resources:
   limits:

@@ -2,7 +2,7 @@ data "template_file" "cloudwatch-agent" {
   count = var.enable_cloudwatch_agent ? 1 : 0
   template = file("${path.module}/yamls/cloudwatch-agent-values.yaml")
   vars = {
-    clusterName = var.eks_cluster_name
+    eks_cluster_name = var.eks_cluster_name
   }
 }
 
