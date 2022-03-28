@@ -14,5 +14,5 @@ resource "helm_release" "fluentbit" {
   chart      = "aws-for-fluent-bit"
   version    = "0.1.14" # appVersion: v2.21.5
 
-  values = [data.template_file.fluentbit-values.rendered]
+  values = [data.template_file.fluentbit.rendered]
 }

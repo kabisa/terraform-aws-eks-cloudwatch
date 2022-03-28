@@ -14,5 +14,5 @@ resource "helm_release" "cloudwatch-agent" {
   chart      = "aws-cloudwatch-metrics"
   version    = "0.0.6" # appVersion: v1.247345
 
-  values = [data.template_file.cloudwatch-agent-values.rendered]
+  values = [data.template_file.cloudwatch-agent.rendered]
 }
