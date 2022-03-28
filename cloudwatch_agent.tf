@@ -8,7 +8,7 @@ data "template_file" "cloudwatch-agent" {
 
 resource "helm_release" "cloudwatch-agent" {
   count = var.enable_cloudwatch_agent ? 1 : 0
-  name       = "fluentbit"
+  name       = "cloudwatch"
   namespace  = "amazon-cloudwatch"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-cloudwatch-metrics"
