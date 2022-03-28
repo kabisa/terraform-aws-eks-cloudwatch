@@ -18,10 +18,6 @@ variable "enable_fluentbit" {
   type = bool
 }
 
-variable "enable_logs_forwarding" {
-  type = bool
-}
-
 variable "eks_cluster_name" {
   type = string
 }
