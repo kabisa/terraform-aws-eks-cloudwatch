@@ -2,7 +2,7 @@ data "template_file" "fluentbit" {
   count = var.enable_fluentbit ? 1 : 0
   template = file("${path.module}/yamls/fluentbit-values.yaml")
   vars = {
-    clusterName = var.eks_cluster_name
+    region = var.region
   }
 }
 

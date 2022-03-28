@@ -64,7 +64,7 @@ filter:
 cloudWatch:
   enabled: true
   match: "*"
-  region: "us-east-1"
+  region: "${region}"
   logGroupName: "/aws/eks/fluentbit-cloudwatch/logs"
   logStreamName:
   logStreamPrefix: "fluentbit-"
@@ -81,7 +81,7 @@ cloudWatch:
 firehose:
   enabled: false
   match: "*"
-  region: "us-east-1"
+  region: "${region}"
   deliveryStream: "my-stream"
   dataKeys:
   roleArn:
@@ -93,7 +93,7 @@ firehose:
 kinesis:
   enabled: false
   match: "*"
-  region: "us-east-1"
+  region: "${region}"
   stream: "my-kinesis-stream-name"
   partitionKey: "container_id"
   appendNewline:
