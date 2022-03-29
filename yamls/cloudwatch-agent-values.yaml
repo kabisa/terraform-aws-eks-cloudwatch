@@ -15,7 +15,8 @@ resources:
 
 serviceAccount:
   create: true
-  annotations: ${cloudwatch_iam_role}
+  annotations: 
+    eks.amazonaws.com/role-arn: ${iam_role_arn}
   name: cloudwatch-agent
 
 hostNetwork: false
