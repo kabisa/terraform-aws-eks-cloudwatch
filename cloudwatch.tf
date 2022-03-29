@@ -6,7 +6,7 @@ resource "aws_cloudwatch_log_group" "container_insights" {
   retention_in_days = var.log_retention_in_days
 }
 
-# this log group is specifically used bu fluentbit, by creating it here we do not have to specify the retention inside the helm chart
+# this log group is specifically used by fluentbit, by creating it here we do not have to specify the retention inside the helm chart
 # Added benefit is that we can destroy it using terraform which we wouldn't be able to when using helm
 resource "aws_cloudwatch_log_group" "fluentbit" {
   count             = var.enable_fluentbit ? 1 : 0
