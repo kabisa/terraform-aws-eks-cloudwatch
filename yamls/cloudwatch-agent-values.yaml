@@ -15,6 +15,7 @@ resources:
 
 serviceAccount:
   create: true
+  annotations: ${cloudwatch_iam_role}
   name: cloudwatch-agent
 
 hostNetwork: false
@@ -23,4 +24,4 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity: {}
+affinity: {} 
