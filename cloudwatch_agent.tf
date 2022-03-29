@@ -1,6 +1,6 @@
 resource "aws_iam_role" "cloudwatch-agent" {
-  count = var.enable_cloudwatch_agent ? 1 : 0
-  name  = "cloudwatch-agent"
+  count       = var.enable_cloudwatch_agent ? 1 : 0
+  name        = "cloudwatch-agent"
   description = "IAM role used by the cloudwatch agent inside EKS clusters"
   assume_role_policy = jsonencode(
     {
@@ -58,7 +58,7 @@ resource "aws_iam_role_policy_attachment" "cloudwatch-agent" {
 }
 
 data "template_file" "cloudwatch-agent" {
-  count = var.enable_cloudwatch_agent ? 1 : 0
+  count    = var.enable_cloudwatch_agent ? 1 : 0
   template = file("${path.module}/yamls/cloudwatch-agent-values.yaml")
   vars = {
     eks_cluster_name = var.eks_cluster_name
@@ -67,7 +67,7 @@ data "template_file" "cloudwatch-agent" {
 }
 
 resource "helm_release" "cloudwatch-agent" {
-  count = var.enable_cloudwatch_agent ? 1 : 0
+  count      = var.enable_cloudwatch_agent ? 1 : 0
   name       = "cloudwatch"
   namespace  = "amazon-cloudwatch"
   repository = "https://aws.github.io/eks-charts"

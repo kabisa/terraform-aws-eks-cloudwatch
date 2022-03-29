@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_log_group" "container_insights" {
-  count = var.enable_cloudwatch_agent ? 1 : 0
+  count    = var.enable_cloudwatch_agent ? 1 : 0
   for_each = toset(["application", "dataplane", "host", "performance"])
 
   name              = "/aws/containerinsights/${var.eks_cluster_name}/${each.value}"

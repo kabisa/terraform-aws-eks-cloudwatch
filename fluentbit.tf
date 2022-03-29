@@ -1,6 +1,6 @@
 resource "aws_iam_role" "fluentbit" {
-  count = var.enable_fluentbit ? 1 : 0
-  name  = "fluentbit"
+  count       = var.enable_fluentbit ? 1 : 0
+  name        = "fluentbit"
   description = "IAM role used by fluentbit inside EKS clusters"
   assume_role_policy = jsonencode(
     {
@@ -54,7 +54,7 @@ resource "aws_iam_role_policy_attachment" "fluentbit" {
 }
 
 data "template_file" "fluentbit" {
-  count = var.enable_fluentbit ? 1 : 0
+  count    = var.enable_fluentbit ? 1 : 0
   template = file("${path.module}/yamls/fluentbit-values.yaml")
   vars = {
     region       = var.region
@@ -63,7 +63,7 @@ data "template_file" "fluentbit" {
 }
 
 resource "helm_release" "fluentbit" {
-  count = var.enable_fluentbit ? 1 : 0
+  count      = var.enable_fluentbit ? 1 : 0
   name       = "fluentbit"
   namespace  = "amazon-cloudwatch"
   repository = "https://aws.github.io/eks-charts"
