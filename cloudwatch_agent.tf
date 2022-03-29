@@ -1,6 +1,7 @@
 resource "aws_iam_role" "cloudwatch-agent" {
   count = var.enable_cloudwatch_agent ? 1 : 0
-  name  = "cwagent-eks"
+  name  = "cloudwatch-agent"
+  description = "IAM role used by the cloudwatch agent inside EKS clusters"
   assume_role_policy = jsonencode(
     {
       Statement = [
@@ -23,6 +24,7 @@ resource "aws_iam_role" "cloudwatch-agent" {
 }
 
 resource "aws_iam_policy" "cloudwatch-agent" {
+  count = var.enable_cloudwatch_agent ? 1 : 0
   policy = jsonencode(
     {
       Statement = [
@@ -51,8 +53,8 @@ resource "aws_iam_policy" "cloudwatch-agent" {
 
 resource "aws_iam_role_policy_attachment" "cloudwatch-agent" {
   count      = var.enable_cloudwatch_agent ? 1 : 0
-  role       = aws_iam_role.cwagent-eks[0].name
-  policy_arn = aws_iam_policy.eks-cloudwatch-policy.arn
+  role       = aws_iam_role.cloudwatch-agent[0].name
+  policy_arn = aws_iam_policy.cloudwatch-agent[0].arn
 }
 
 data "template_file" "cloudwatch-agent" {
@@ -60,7 +62,7 @@ data "template_file" "cloudwatch-agent" {
   template = file("${path.module}/yamls/cloudwatch-agent-values.yaml")
   vars = {
     eks_cluster_name = var.eks_cluster_name
-    cloudwatch_iam_role = aws_iam_role.cloudwatch-agent[0].name
+    iam_role_arn     = aws_iam_role.cloudwatch-agent[0].arn
   }
 }
 
