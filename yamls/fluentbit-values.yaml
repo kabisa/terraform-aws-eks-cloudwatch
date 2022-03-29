@@ -64,13 +64,13 @@ filter:
 cloudWatch:
   enabled: true
   match: "*"
-  region: 
+  region: ${region}
   logGroupName: "/aws/eks/fluentbit-cloudwatch/logs"
   logStreamName:
   logStreamPrefix: "fluentbit-"
   logKey:
   logFormat:
-  logRetentionDays: 90
+  logRetentionDays:
   roleArn:
   autoCreateGroup: true
   endpoint:
@@ -133,8 +133,9 @@ elasticsearch:
 
 serviceAccount:
   create: true
-  annotations: {}
-  name: fluentd
+  annotations: 
+    eks.amazonaws.com/role-arn: ${iam_role_arn}
+  name: fluentbit
 
 resources:
   limits:
