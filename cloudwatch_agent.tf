@@ -1,40 +1,7 @@
-resource "kubernetes_config_map" "cwagentconfig" {
-  count      = var.enable_cloudwatch_agent ? 1 : 0
-  depends_on = [kubernetes_namespace.amazon-cloudwatch]
-  metadata {
-    name      = "cwagentconfig"
-    namespace = kubernetes_namespace.amazon-cloudwatch.metadata[0].name
-  }
-  data = {
-    "cwagentconfig.json" = <<EOT
-{
-    "agent": {
-        "region": "${var.region}"
-    },
-    "logs": {
-        "metrics_collected": {
-            "kubernetes": {
-                "cluster_name": "${var.eks_cluster_name}",
-                "metrics_collection_interval": 60
-            }
-        },
-        "force_flush_interval": 5
-    },
-    "metrics": {
-        "metrics_collected": {
-            "statsd": {
-                "service_address": ":8125"
-            }
-        }
-    }
-}
-EOT
-  }
-}
-
-resource "aws_iam_role" "cwagent-eks" {
-  count = var.enable_cloudwatch_agent ? 1 : 0
-  name  = "cwagent-eks"
+resource "aws_iam_role" "cloudwatch-agent" {
+  count       = var.enable_cloudwatch_agent ? 1 : 0
+  name        = "cloudwatch-agent"
+  description = "IAM role used by the cloudwatch agent inside EKS clusters"
   assume_role_policy = jsonencode(
     {
       Statement = [
@@ -56,43 +23,56 @@ resource "aws_iam_role" "cwagent-eks" {
   )
 }
 
-resource "aws_iam_role_policy_attachment" "cwagent-eks" {
+resource "aws_iam_policy" "cloudwatch-agent" {
+  count = var.enable_cloudwatch_agent ? 1 : 0
+  policy = jsonencode(
+    {
+      Statement = [
+        {
+          Action = [
+            "cloudwatch:PutMetricData",
+            "ec2:DescribeTags",
+            "ec2:DescribeVolumeAttribute",
+            "ec2:DescribeVolumes",
+            "ec2:DescribeVolumeStatus",
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:DescribeLogGroups",
+            "logs:DescribeLogStreams",
+            "logs:PutLogEvents",
+          ]
+          Effect   = "Allow"
+          Resource = "*"
+          Sid      = "VisualEditor0"
+        },
+      ]
+      Version = "2012-10-17"
+    }
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch-agent" {
   count      = var.enable_cloudwatch_agent ? 1 : 0
-  role       = aws_iam_role.cwagent-eks[0].name
-  policy_arn = aws_iam_policy.eks-cloudwatch-policy.arn
+  role       = aws_iam_role.cloudwatch-agent[0].name
+  policy_arn = aws_iam_policy.cloudwatch-agent[0].arn
 }
 
-locals {
-  service_account_manifests = var.enable_cloudwatch_agent ? (
-    split("---", templatefile("${path.module}/yamls/cwagent-serviceaccount.yaml", {
-      account_id          = var.account_id
-      cloudwatch_iam_role = aws_iam_role.cwagent-eks[0].name
-    }))
-  ) : []
-
-  daemonset_manifests = var.enable_cloudwatch_agent ? (
-    split("---", file("${path.module}/yamls/cwagent-daemonset.yaml"))
-  ): []
+data "template_file" "cloudwatch-agent" {
+  count    = var.enable_cloudwatch_agent ? 1 : 0
+  template = file("${path.module}/yamls/cloudwatch-agent-values.yaml")
+  vars = {
+    eks_cluster_name = var.eks_cluster_name
+    iam_role_arn     = aws_iam_role.cloudwatch-agent[0].arn
+  }
 }
 
-resource "kubectl_manifest" "cwagent-serviceaccount" {
-  for_each   = { for manifest in local.service_account_manifests : md5(manifest) => manifest }
-  yaml_body  = each.value
+resource "helm_release" "cloudwatch-agent" {
+  count      = var.enable_cloudwatch_agent ? 1 : 0
+  name       = "cloudwatch"
+  namespace  = "amazon-cloudwatch"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-cloudwatch-metrics"
+  version    = "0.0.6" # appVersion: v1.247345
 
-  depends_on = [
-    kubernetes_namespace.amazon-cloudwatch,
-    kubernetes_config_map.cwagentconfig[0]
-  ]
-}
-
-resource "kubectl_manifest" "cwagent-daemonset" {
-  for_each   = { for manifest in local.daemonset_manifests : md5(manifest) => manifest }
-  yaml_body  = each.value
-
-  depends_on = [
-    kubernetes_namespace.amazon-cloudwatch,
-    kubectl_manifest.cwagent-serviceaccount[0],
-    kubernetes_config_map.cwagentconfig[0],
-    aws_iam_role_policy_attachment.cwagent-eks[0]
-  ]
+  values = [data.template_file.cloudwatch-agent[0].rendered]
 }

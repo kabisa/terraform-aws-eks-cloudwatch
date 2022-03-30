@@ -14,7 +14,7 @@ variable "enable_cloudwatch_agent" {
   type = bool
 }
 
-variable "enable_logs_forwarding" {
+variable "enable_fluentbit" {
   type = bool
 }
 
