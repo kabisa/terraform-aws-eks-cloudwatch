@@ -53,15 +53,6 @@ resource "aws_iam_role_policy_attachment" "fluentbit" {
   policy_arn = aws_iam_policy.fluentbit[0].arn
 }
 
-data "template_file" "fluentbit" {
-  count    = var.enable_fluentbit ? 1 : 0
-  template = file("${path.module}/yamls/fluentbit-values.yaml")
-  vars = {
-    region       = var.region
-    iam_role_arn = aws_iam_role.fluentbit[0].arn
-  }
-}
-
 resource "helm_release" "fluentbit" {
   count      = var.enable_fluentbit ? 1 : 0
   name       = "fluentbit"
@@ -70,5 +61,13 @@ resource "helm_release" "fluentbit" {
   chart      = "aws-for-fluent-bit"
   version    = "0.1.14" # appVersion: v2.21.5
 
-  values = [data.template_file.fluentbit[0].rendered]
+  values = [
+    templatefile(
+      "${path.module}/yamls/fluentbit-values.yaml",
+      {
+        region       = var.region
+        iam_role_arn = aws_iam_role.fluentbit[0].arn
+      }
+    )
+  ]
 }

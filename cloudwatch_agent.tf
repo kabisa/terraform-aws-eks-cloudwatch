@@ -57,15 +57,6 @@ resource "aws_iam_role_policy_attachment" "cloudwatch-agent" {
   policy_arn = aws_iam_policy.cloudwatch-agent[0].arn
 }
 
-data "template_file" "cloudwatch-agent" {
-  count    = var.enable_cloudwatch_agent ? 1 : 0
-  template = file("${path.module}/yamls/cloudwatch-agent-values.yaml")
-  vars = {
-    eks_cluster_name = var.eks_cluster_name
-    iam_role_arn     = aws_iam_role.cloudwatch-agent[0].arn
-  }
-}
-
 resource "helm_release" "cloudwatch-agent" {
   count      = var.enable_cloudwatch_agent ? 1 : 0
   name       = "cloudwatch"
@@ -74,5 +65,13 @@ resource "helm_release" "cloudwatch-agent" {
   chart      = "aws-cloudwatch-metrics"
   version    = "0.0.6" # appVersion: v1.247345
 
-  values = [data.template_file.cloudwatch-agent[0].rendered]
+  values = [
+    templatefile(
+      "${path.module}/yamls/cloudwatch-agent-values.yaml",
+      {
+        eks_cluster_name = var.eks_cluster_name
+        iam_role_arn     = aws_iam_role.cloudwatch-agent[0].arn
+      }
+    )
+  ]
 }
