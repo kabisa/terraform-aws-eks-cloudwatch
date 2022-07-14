@@ -32,3 +32,9 @@ variable "log_retention_in_days" {
   type        = number
   default     = 90
 }
+
+variable "log_preserve_legacy_log_group" {
+  description = "When true, preserves the legacy log group. Mainly useful to transition to the new log group format"
+  type = bool
+  default = true
+}

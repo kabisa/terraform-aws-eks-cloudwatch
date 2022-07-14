@@ -36,6 +36,7 @@ resource "aws_iam_policy" "fluentbit" {
             "logs:DescribeLogGroups",
             "logs:DescribeLogStreams",
             "logs:PutLogEvents",
+            "logs:PutRetentionPolicy",
           ]
           Effect   = "Allow"
           Resource = "*"

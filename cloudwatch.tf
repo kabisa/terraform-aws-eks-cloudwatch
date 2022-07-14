@@ -28,7 +28,7 @@ resource "aws_cloudwatch_log_group" "cloudwatch-performance" {
 }
 
 resource "aws_cloudwatch_log_group" "fluentbit" {
-  count             = var.enable_fluentbit ? 1 : 0
+  count             = var.enable_fluentbit && var.log_preserve_legacy_log_group ? 1 : 0
   name              = "/aws/eks/fluentbit-cloudwatch/logs"
   retention_in_days = var.log_retention_in_days
 }
