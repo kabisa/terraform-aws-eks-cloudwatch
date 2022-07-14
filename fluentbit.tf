@@ -65,9 +65,9 @@ resource "helm_release" "fluentbit" {
     templatefile(
       "${path.module}/yamls/fluentbit-values.yaml",
       {
-        region       = var.region
-        iam_role_arn = aws_iam_role.fluentbit[0].arn
-        cluster_name = var.eks_cluster_name
+        region                = var.region
+        iam_role_arn          = aws_iam_role.fluentbit[0].arn
+        cluster_name          = var.eks_cluster_name
         log_retention_in_days = var.log_retention_in_days
       }
     )

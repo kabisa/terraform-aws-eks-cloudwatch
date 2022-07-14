@@ -1,5 +1,5 @@
 variable "account_id" {
-  type = string
+  type        = string
   description = "The AWS account ID"
 }
 
@@ -8,22 +8,22 @@ variable "oidc_host_path" {
 }
 
 variable "region" {
-  type = string
+  type        = string
   description = "The AWS region to deploy to"
 }
 
 variable "enable_cloudwatch_agent" {
-  type = bool
+  type        = bool
   description = "Boolean to enable cloudwatch agent"
 }
 
 variable "enable_fluentbit" {
-  type = bool
+  type        = bool
   description = "Boolean to enable fluentbit"
 }
 
 variable "eks_cluster_name" {
-  type = string
+  type        = string
   description = "Name of the EKS cluster"
 }
 
