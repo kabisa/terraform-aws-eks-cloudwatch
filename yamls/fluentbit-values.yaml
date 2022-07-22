@@ -65,12 +65,12 @@ cloudWatch:
   enabled: true
   match: "*"
   region: ${region}
-  logGroupName: "/aws/eks/fluentbit-cloudwatch/logs"
-  logStreamName:
-  logStreamPrefix: "fluentbit-"
+  logGroupName: "/aws/eks/${cluster_name}/ns/$(kubernetes['namespace_name'])"
+  logStreamName: "$(kubernetes['pod_name'])"
+  logStreamPrefix: 
   logKey:
   logFormat:
-  logRetentionDays:
+  logRetentionDays: ${log_retention_in_days}
   roleArn:
   autoCreateGroup: true
   endpoint:
