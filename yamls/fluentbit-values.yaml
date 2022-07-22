@@ -65,8 +65,8 @@ cloudWatch:
   enabled: true
   match: "*"
   region: ${region}
-  logGroupName: "/aws/eks/${cluster_name}/namespace/$(kubernetes['namespace_name'])/logs"
-  logStreamName: "$(kubernetes['container_name'])"
+  logGroupName: "/aws/eks/${cluster_name}/ns/$(kubernetes['namespace_name'])"
+  logStreamName: "$(kubernetes['pod_name'])"
   logStreamPrefix: 
   logKey:
   logFormat:
