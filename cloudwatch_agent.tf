@@ -64,7 +64,7 @@ resource "helm_release" "cloudwatch-agent" {
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-cloudwatch-metrics"
   version    = "0.0.7" 
-  # appVersion: v1.247345
+  # appVersion: 1.247350.0b251780
 
   values = [
     templatefile(
