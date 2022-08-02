@@ -63,7 +63,7 @@ resource "helm_release" "cloudwatch-agent" {
   namespace  = "amazon-cloudwatch"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-cloudwatch-metrics"
-  version    = "0.0.6" 
+  version    = "0.0.7" 
   # appVersion: v1.247345
 
   values = [
