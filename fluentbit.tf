@@ -60,7 +60,7 @@ resource "helm_release" "fluentbit" {
   namespace  = "amazon-cloudwatch"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-for-fluent-bit"
-  version    = "0.1.21"
+  version    = "0.1.22"
   # appVersion: v2.21.5
 
   values = [
