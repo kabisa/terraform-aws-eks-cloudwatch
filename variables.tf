@@ -22,6 +22,11 @@ variable "enable_fluentbit" {
   description = "Boolean to enable fluentbit"
 }
 
+variable "fluentbit_full_log" {
+  type = bool
+  description = "Boolean to output full pod/container logs + kubernetes metadata or just the message"
+}
+
 variable "eks_cluster_name" {
   type        = string
   description = "Name of the EKS cluster"

@@ -71,6 +71,7 @@ resource "helm_release" "fluentbit" {
         iam_role_arn          = aws_iam_role.fluentbit[0].arn
         cluster_name          = var.eks_cluster_name
         log_retention_in_days = var.log_retention_in_days
+        full_log              = var.fluentbit_full_log ? "" : "log"
       }
     )
   ]
