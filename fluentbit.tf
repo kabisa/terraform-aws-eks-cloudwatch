@@ -61,7 +61,7 @@ resource "helm_release" "fluentbit" {
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-for-fluent-bit"
   version    = "0.1.32"
-  # appVersion: v2.21.5
+  # appVersion: 2.31.12.20231011
 
   values = [
     templatefile(
