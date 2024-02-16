@@ -23,7 +23,7 @@ variable "enable_fluentbit" {
 }
 
 variable "fluentbit_full_log" {
-  type = bool
+  type        = bool
   description = "Boolean to output full pod/container logs + kubernetes metadata or just the message"
 }
 
