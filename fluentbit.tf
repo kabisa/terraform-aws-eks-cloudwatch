@@ -61,7 +61,7 @@ resource "helm_release" "fluentbit" {
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-for-fluent-bit"
   version    = "0.1.32"
-  # appVersion: v2.21.5
+  # appVersion: 2.31.12.20231011
 
   values = [
     templatefile(
@@ -71,6 +71,7 @@ resource "helm_release" "fluentbit" {
         iam_role_arn          = aws_iam_role.fluentbit[0].arn
         cluster_name          = var.eks_cluster_name
         log_retention_in_days = var.log_retention_in_days
+        full_log              = var.fluentbit_full_log ? "" : "log"
       }
     )
   ]
